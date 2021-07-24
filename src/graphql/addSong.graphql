@@ -1,0 +1,24 @@
+mutation createSong(
+  $title: String!
+  $artist: String!
+  $url: String!
+  $thumbnail: String!
+  $duration: Float!
+) {
+  createSong(
+    input: {
+      title: $title
+      artist: $artist
+      url: $url
+      thumbnail: $thumbnail
+      duration: $duration
+    }
+  ) {
+    id
+    title
+    artist
+    url
+    thumbnail
+    duration
+  }
+}

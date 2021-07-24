@@ -50,12 +50,12 @@ export default function QueuedSongList() {
         QUEUE (5)
       </Typography>
       {Array.from({ length: 5 }, () => song).map((song, i) => (
-        <QueuedSong i={i} song={song} />
+        <QueuedSong key={i} song={song} />
       ))}
     </div>
   ) : null;
 }
-function QueuedSong({ i, song }) {
+function QueuedSong({ song }) {
   const classes = useStyles();
   const { thumbnail, title, artist } = song;
   return (
@@ -65,7 +65,7 @@ function QueuedSong({ i, song }) {
         <Typography variant="subtitle2" className={classes.text}>
           {title}
         </Typography>
-        <Typography variant="bodt2" className={classes.text}>
+        <Typography variant="body2" className={classes.text}>
           {artist}
         </Typography>
       </div>

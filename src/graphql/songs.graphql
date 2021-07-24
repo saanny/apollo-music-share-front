@@ -1,0 +1,10 @@
+query songs {
+  songs {
+    id
+    title
+    artist
+    url
+    thumbnail
+    duration
+  }
+}

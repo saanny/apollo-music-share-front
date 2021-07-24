@@ -10,6 +10,7 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import { PlayArrow, Save } from "@material-ui/icons";
+import { useSongsQuery } from "../generated/graphql.tsx";
 const useStyles = makeStyles((theme) => ({
   container: {
     margin: theme.spacing(3),
@@ -30,13 +31,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 export default function SongList() {
-  let loading = false;
-  const song = {
-    title: "amir",
-    artist: "moon",
-    thumbnail:
-      "https://i1.sndcdn.com/artworks-4Bn0Jw1SrZWPOoEQ-MMTsPQ-t500x500.jpg",
-  };
+  const { data, loading, error } = useSongsQuery();
+
   if (loading) {
     return (
       <div
@@ -51,11 +47,13 @@ export default function SongList() {
       </div>
     );
   }
-
+  if (error) {
+    return <div>{error}</div>;
+  }
   return (
     <div>
-      {Array.from({ length: 10 }, () => song).map((song, i) => (
-        <Song i={i} song={song} />
+      {data.songs.map((song, i) => (
+        <Song key={i} song={song} />
       ))}
     </div>
   );
