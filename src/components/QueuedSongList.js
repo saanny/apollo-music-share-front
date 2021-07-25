@@ -1,4 +1,5 @@
 import React from "react";
+import { gql, useQuery } from "@apollo/client";
 import {
   Typography,
   IconButton,
@@ -7,7 +8,11 @@ import {
   useMediaQuery,
 } from "@material-ui/core";
 import { Delete } from "@material-ui/icons";
-
+import {
+  useQueueQuery,
+  useDeleteQueueSongMutation,
+  QueueDocument,
+} from "../generated/graphql";
 const useStyles = makeStyles((theme) => ({
   avatar: {
     width: 44,
@@ -30,16 +35,12 @@ const useStyles = makeStyles((theme) => ({
     whiteSpace: "nowrap",
   },
 }));
+
 export default function QueuedSongList() {
   const greaterThanMedium = useMediaQuery((theme) =>
     theme.breakpoints.up("md")
   );
-  const song = {
-    title: "amir",
-    artist: "moon",
-    thumbnail:
-      "https://i1.sndcdn.com/artworks-4Bn0Jw1SrZWPOoEQ-MMTsPQ-t500x500.jpg",
-  };
+  const { data, loading, error } = useQueueQuery();
   return greaterThanMedium ? (
     <div
       style={{
@@ -47,17 +48,41 @@ export default function QueuedSongList() {
       }}
     >
       <Typography color="textSecondary" variant="button">
-        QUEUE (5)
+        QUEUE ({data?.queue.length})
       </Typography>
-      {Array.from({ length: 5 }, () => song).map((song, i) => (
+      {data?.queue?.map((song, i) => (
         <QueuedSong key={i} song={song} />
       ))}
     </div>
   ) : null;
 }
+
 function QueuedSong({ song }) {
   const classes = useStyles();
-  const { thumbnail, title, artist } = song;
+  const [deleteQueueSong] = useDeleteQueueSongMutation();
+  const { thumbnail, title, artist, id } = song;
+  function handleRemoveQueueSong() {
+    deleteQueueSong({
+      variables: {
+        id,
+      },
+      update: (cache, { data }) => {
+        const existingQueueSongs = cache.readQuery({
+          query: QueueDocument,
+        });
+        console.log(existingQueueSongs, data);
+        const newData = existingQueueSongs.queue.filter(
+          (song) => song.id !== data?.deleteQueueSong?.id
+        );
+        cache.writeQuery({
+          query: QueueDocument,
+          data: {
+            queue: newData,
+          },
+        });
+      },
+    });
+  }
   return (
     <div className={classes.container}>
       <Avatar src={thumbnail} alt="song thumbnail" className={classes.avatar} />
@@ -70,7 +95,7 @@ function QueuedSong({ song }) {
         </Typography>
       </div>
       <IconButton>
-        <Delete color="error" />
+        <Delete color="error" onClick={handleRemoveQueueSong} />
       </IconButton>
     </div>
   );

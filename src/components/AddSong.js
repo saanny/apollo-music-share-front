@@ -13,7 +13,7 @@ import React from "react";
 import SoundCloudPlayer from "react-player/soundcloud";
 import YoutubePlayer from "react-player/youtube";
 import ReactPlayer from "react-player";
-import { useCreateSongMutation } from "../generated/graphql";
+import { useCreateSongMutation, SongsDocument } from "../generated/graphql";
 const useStyles = makeStyles((theme) => ({
   container: {
     display: "flex",
@@ -87,6 +87,19 @@ export default function AddSong() {
           title: title.length > 0 ? title : null,
           artist: artist.length > 0 ? artist : null,
         },
+        update: (cache, { data }) => {
+          const newSong = data?.createSong;
+          const existingSongs = cache.readQuery({
+            query: SongsDocument,
+          });
+
+          cache.writeQuery({
+            query: SongsDocument,
+            data: {
+              songs: [...existingSongs?.songs, newSong],
+            },
+          });
+        },
       });
       handleSetDialog();
       setSong(DEFAULT_SONG);
@@ -124,7 +137,7 @@ export default function AddSong() {
   }
 
   const { thumbnail, title, artist } = song;
-  console.dir(error);
+
   return (
     <div className={classes.container}>
       <Dialog

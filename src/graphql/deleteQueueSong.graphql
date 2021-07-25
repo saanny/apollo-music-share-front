@@ -1,0 +1,6 @@
+mutation deleteQueueSong($id: String!) {
+  deleteQueueSong(id: $id) {
+    id
+    deleted
+  }
+}

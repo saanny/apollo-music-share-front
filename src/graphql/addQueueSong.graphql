@@ -1,0 +1,24 @@
+mutation addQueue(
+  $title: String!
+  $artist: String!
+  $url: String!
+  $thumbnail: String!
+  $duration: Float!
+) {
+  addQueue(
+    input: {
+      title: $title
+      artist: $artist
+      url: $url
+      thumbnail: $thumbnail
+      duration: $duration
+    }
+  ) {
+    id
+    title
+    artist
+    url
+    thumbnail
+    duration
+  }
+}

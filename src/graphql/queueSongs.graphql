@@ -1,0 +1,10 @@
+query queue {
+  queue {
+    id
+    title
+    artist
+    url
+    thumbnail
+    duration
+  }
+}
